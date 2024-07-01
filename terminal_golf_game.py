@@ -1,30 +1,31 @@
-import random
+import argparse
+import golf_game
 
-def golf_game():
-    hole_distance = random.randint(150, 500)
-    player_position = 0
-    stroke_count = 0
+def check_start_pos_value(value):
+    ivalue = int(value)
+    if ivalue < 0 or ivalue > 500:
+        raise argparse.ArgumentTypeError(f"{ivalue} is outside of the acceptable range of 0 to 500 for the player start.")
+    return ivalue
 
-    print(f"Welcome to GOLF GAME! The hole is currently {hole_distance} yards away.")
+def parse_args():
+    parser = argparse.ArgumentParser()
+    # Set 'required' to False to get the DEFAULT_LIST_OF_STORED_JOBS
+    parser.add_argument('--wind', action='store_true', dest='wind_enabled',
+        help='Enable wind during this game. Off by default.')
+    # TODO: Starting position logic on player instantiation and logging to terminal
+    # parser.add_argument('--start_pos', type=check_start_pos_value, default=0, dest='start_pos',
+    #     help='Starting position of the player in yards in the Northerly direction. Defaults to 0.')
+    args = parser.parse_args()
+    return args
 
-    while player_position < hole_distance:
-        try:
-            shot_distance = int(input("Choose the distance of your shot (1 to 300 yards): "))
-            if 1 <= shot_distance <= 300:
-                player_position += shot_distance
-                stroke_count += 1
-                print(f"You hit the ball {shot_distance} yards. Your total distance is now {player_position} yards.")
-            else:
-                print("Please enter a distance between 1 and 300 yards.")
-        except ValueError:
-            print('Please enter a valud number')
-        
-        if player_position > hole_distance:
-            print(f"Your shot went {player_position - hole_distance} yards past the hole. You need to hit the ball back.")
 
-            player_position = hole_distance - (player_position - hole_distance)
+def main():
+    args = parse_args()
 
-        
-        print(f"Congratulations! You reached the hole in {stroke_count} strokes.")
+    game = golf_game.GolfGame(wind_enabled=args.wind_enabled)
 
-golf_game()
+    game.start_game()
+    game.game_loop()
+
+if __name__ == "__main__":
+    main()
